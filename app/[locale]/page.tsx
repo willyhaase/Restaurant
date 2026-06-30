@@ -48,10 +48,11 @@ function AppShell({ locale }: { locale: string }) {
   );
 }
 
-export default function Page({ params }: { params: { locale: string } }) {
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   return (
     <AuthProvider>
-      <AppShell locale={params.locale} />
+      <AppShell locale={locale} />
     </AuthProvider>
   );
 }
