@@ -1,0 +1,73 @@
+{
+  "app": {
+    "title": "Küche — Vorbereitung"
+  },
+  "nav": {
+    "evening": "Abend",
+    "morning": "Morgen",
+    "admin": "Verwaltung"
+  },
+  "auth": {
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "fullName": "Name",
+    "signingIn": "Anmelden...",
+    "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "error": "Anmeldefehler"
+  },
+  "evening": {
+    "title": "Vorbereitung für morgen",
+    "selected": "Ausgewählt: {count} Positionen",
+    "save": "Liste speichern ({count} Positionen)",
+    "saving": "Speichern...",
+    "saved": "Liste gespeichert",
+    "addItem": "+ Position hinzufügen",
+    "newItem": "Neue Position",
+    "itemName": "Bezeichnung",
+    "fullRecipe": "Volles Rezept",
+    "half": "Halbe Menge",
+    "cancel": "Abbrechen",
+    "add": "Hinzufügen",
+    "noAccess": "Nur Köche oder Admins können die Vorbereitungsliste erstellen."
+  },
+  "morning": {
+    "title": "Heutige Vorbereitung",
+    "done": "{done} von {total} erledigt",
+    "allDone": "Alles fertig!",
+    "reset": "Alle zurücksetzen",
+    "noSession": "Keine Liste erstellt",
+    "noSessionHint": "Erstellen Sie die Vorbereitungsliste im Abend-Tab.",
+    "fullRecipe": "volles Rezept",
+    "half": "halbe Menge"
+  },
+  "admin": {
+    "title": "Verwaltung",
+    "users": "Benutzer",
+    "prepItems": "Vorbereitungsliste",
+    "role": "Rolle",
+    "name": "Name",
+    "email": "E-Mail",
+    "roles": {
+      "admin": "Administrator",
+      "chef": "Koch",
+      "assistant": "Assistent"
+    },
+    "saving": "Speichern...",
+    "saved": "Gespeichert",
+    "kitchen": {
+      "hot": "Warme Küche",
+      "cold": "Kalte Küche"
+    },
+    "fullQty": "Volles Rezept",
+    "halfQty": "Halbe Menge",
+    "deleteConfirm": "Diese Position löschen?",
+    "addItem": "Hinzufügen",
+    "itemName": "Bezeichnung"
+  },
+  "kitchen": {
+    "hot": "🔥 Warme Küche",
+    "cold": "❄️ Kalte Küche"
+  }
+}

@@ -13,6 +13,7 @@
     "@types/react-dom": "^18",
     "autoprefixer": "^10",
     "next": "^14",
+    "next-intl": "^4.13.1",
     "postcss": "^8",
     "react": "^18",
     "react-dom": "^18",

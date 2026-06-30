@@ -1,0 +1,73 @@
+{
+  "app": {
+    "title": "Kitchen — Prep List"
+  },
+  "nav": {
+    "evening": "Evening",
+    "morning": "Morning",
+    "admin": "Admin"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full Name",
+    "signingIn": "Signing in...",
+    "invalidCredentials": "Invalid email or password",
+    "error": "Sign in error"
+  },
+  "evening": {
+    "title": "Tomorrow's Prep",
+    "selected": "Selected: {count} items",
+    "save": "Save list ({count} items)",
+    "saving": "Saving...",
+    "saved": "List saved",
+    "addItem": "+ Add item to list",
+    "newItem": "New Item",
+    "itemName": "Item name",
+    "fullRecipe": "Full recipe",
+    "half": "Half",
+    "cancel": "Cancel",
+    "add": "Add",
+    "noAccess": "Only chefs or admins can create the prep list."
+  },
+  "morning": {
+    "title": "Today's Prep",
+    "done": "{done} of {total} done",
+    "allDone": "All done!",
+    "reset": "Reset all",
+    "noSession": "No list created",
+    "noSessionHint": "Create tomorrow's prep list in the Evening tab.",
+    "fullRecipe": "full recipe",
+    "half": "half"
+  },
+  "admin": {
+    "title": "Admin",
+    "users": "Users",
+    "prepItems": "Prep Items",
+    "role": "Role",
+    "name": "Name",
+    "email": "Email",
+    "roles": {
+      "admin": "Admin",
+      "chef": "Chef",
+      "assistant": "Assistant"
+    },
+    "saving": "Saving...",
+    "saved": "Saved",
+    "kitchen": {
+      "hot": "Hot Kitchen",
+      "cold": "Cold Kitchen"
+    },
+    "fullQty": "Full recipe",
+    "halfQty": "Half",
+    "deleteConfirm": "Delete this item?",
+    "addItem": "Add",
+    "itemName": "Name"
+  },
+  "kitchen": {
+    "hot": "🔥 Hot Kitchen",
+    "cold": "❄️ Cold Kitchen"
+  }
+}
