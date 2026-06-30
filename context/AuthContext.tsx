@@ -48,11 +48,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function loadProfile(userId: string) {
-    const { data } = await getSupabase()
+    const { data, error } = await getSupabase()
       .from("user_profiles")
       .select("*")
       .eq("id", userId)
       .single();
+    if (error) console.error("loadProfile error:", error.message);
     setProfile(data || null);
     setLoading(false);
   }
