@@ -22,6 +22,7 @@ interface HeaderProps {
 export default function Header({ mode, onModeChange, locale }: HeaderProps) {
   const t = useTranslations("nav");
   const tAuth = useTranslations("auth");
+  const tAdmin = useTranslations("admin");
   const { profile, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -120,7 +121,7 @@ export default function Header({ mode, onModeChange, locale }: HeaderProps) {
               profile.role === "chef" ? "bg-orange-100 text-orange-700" :
               "bg-blue-100 text-blue-700"
             }`}>
-              {profile.role === "admin" ? "Admin" : profile.role === "chef" ? "Chef" : "Assistant"}
+              {tAdmin(`roles.${profile.role}`)}
             </span>
           </div>
         )}

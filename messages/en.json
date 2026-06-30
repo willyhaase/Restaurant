@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "Kitchen — Prep List"
+    "title": "Kitchen — Prep List",
+    "loading": "Loading..."
   },
   "nav": {
     "evening": "Evening",

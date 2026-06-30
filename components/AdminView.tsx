@@ -19,6 +19,8 @@ export default function AdminView() {
 
   // New item form
   const [newName, setNewName] = useState("");
+  const [newNameEn, setNewNameEn] = useState("");
+  const [newNameDe, setNewNameDe] = useState("");
   const [newKitchen, setNewKitchen] = useState<KitchenType>("hot");
   const [newFull, setNewFull] = useState("");
   const [newHalf, setNewHalf] = useState("");
@@ -52,10 +54,11 @@ export default function AdminView() {
     if (!newName.trim() || !newFull.trim()) return;
     const { data } = await supabase
       .from("prep_item_templates")
-      .insert({ name: newName.trim(), kitchen_type: newKitchen, full_quantity: newFull.trim(), half_quantity: newHalf.trim(), unit: "", active: true })
+      .insert({ name: newName.trim(), name_en: newNameEn.trim() || newName.trim(), name_de: newNameDe.trim() || newName.trim(),
+        kitchen_type: newKitchen, full_quantity: newFull.trim(), half_quantity: newHalf.trim(), unit: "", active: true })
       .select().single();
     if (data) setItems((prev) => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
-    setNewName(""); setNewFull(""); setNewHalf("");
+    setNewName(""); setNewNameEn(""); setNewNameDe(""); setNewFull(""); setNewHalf("");
   }
 
   const ROLES: UserRole[] = ["admin", "chef", "assistant"];
@@ -143,10 +146,22 @@ export default function AdminView() {
               ))}
             </div>
             <input
-              type="text" placeholder={t("itemName")} value={newName}
+              type="text" placeholder={`${t("itemName")} (RU)`} value={newName}
               onChange={(e) => setNewName(e.target.value)}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
             />
+            <div className="flex gap-2">
+              <input
+                type="text" placeholder={`${t("itemName")} (EN)`} value={newNameEn}
+                onChange={(e) => setNewNameEn(e.target.value)}
+                className="flex-1 px-3 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none"
+              />
+              <input
+                type="text" placeholder={`${t("itemName")} (DE)`} value={newNameDe}
+                onChange={(e) => setNewNameDe(e.target.value)}
+                className="flex-1 px-3 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none"
+              />
+            </div>
             <div className="flex gap-2">
               <input
                 type="text" placeholder={t("fullQty")} value={newFull}

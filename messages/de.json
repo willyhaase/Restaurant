@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "Küche — Vorbereitung"
+    "title": "Küche — Vorbereitung",
+    "loading": "Laden..."
   },
   "nav": {
     "evening": "Abend",

@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function LoginForm() {
   const t = useTranslations("auth");
+  const tApp = useTranslations("app");
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +27,7 @@ export default function LoginForm() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">🍴</div>
-          <h1 className="text-2xl font-bold text-gray-900">Kitchen Prep</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{tApp("title")}</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
