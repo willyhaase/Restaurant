@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase, type KitchenType, type PrepTask } from "@/lib/supabase";
+import { supabase, type KitchenType, type PrepTask, type QuantityMode } from "@/lib/supabase";
+
+const MODE_LABELS: Record<QuantityMode, string> = {
+  full: "полный рецепт",
+  half: "половина",
+};
 
 const KITCHEN_LABELS: Record<KitchenType, string> = {
   hot: "🔥 Горячая кухня",
@@ -191,11 +196,24 @@ export default function MorningView() {
                     >
                       {task.name}
                     </p>
-                    {task.unit && (
-                      <p className={`text-xs mt-0.5 ${task.done ? "text-gray-300" : "text-gray-500"}`}>
-                        {task.unit}
-                      </p>
-                    )}
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      {task.unit && (
+                        <span className={`text-xs font-semibold ${task.done ? "text-gray-300" : "text-gray-700"}`}>
+                          {task.unit}
+                        </span>
+                      )}
+                      {task.quantity_mode && (
+                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                          task.done
+                            ? "bg-gray-100 text-gray-300"
+                            : task.quantity_mode === "half"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-gray-100 text-gray-500"
+                        }`}>
+                          {MODE_LABELS[task.quantity_mode]}
+                        </span>
+                      )}
+                    </div>
                     {task.note && (
                       <p className={`text-xs mt-0.5 italic ${task.done ? "text-gray-300" : "text-gray-400"}`}>
                         {task.note}

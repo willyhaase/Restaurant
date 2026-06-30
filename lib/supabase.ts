@@ -11,12 +11,12 @@ export function getSupabase(): SupabaseClient {
   return _client;
 }
 
-// Convenience alias — only call from client components (useEffect / event handlers)
 export const supabase = {
   from: (...args: Parameters<SupabaseClient["from"]>) => getSupabase().from(...args),
 };
 
 export type KitchenType = "hot" | "cold";
+export type QuantityMode = "full" | "half";
 
 export interface PrepSession {
   id: string;
@@ -32,6 +32,8 @@ export interface PrepTask {
   kitchen_type: KitchenType;
   note: string | null;
   done: boolean;
+  quantity_mode: QuantityMode | null;
+  template_id: string | null;
   created_at: string;
 }
 
@@ -40,4 +42,7 @@ export interface PrepItemTemplate {
   name: string;
   unit: string;
   kitchen_type: KitchenType;
+  full_quantity: string;
+  half_quantity: string;
+  active: boolean;
 }
