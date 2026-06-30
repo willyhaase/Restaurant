@@ -27,15 +27,15 @@ export default function Header({ mode, onModeChange, locale }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  async function switchLocale(newLocale: string) {
-    // Update in DB
+  function switchLocale(newLocale: string) {
+    // Save preference to DB (fire and forget)
     if (profile) {
-      await getSupabase()
+      getSupabase()
         .from("user_profiles")
         .update({ language: newLocale })
         .eq("id", profile.id);
     }
-    // Navigate to new locale path
+    // Navigate immediately without waiting for DB
     const segments = pathname.split("/");
     segments[1] = newLocale;
     router.push(segments.join("/"));

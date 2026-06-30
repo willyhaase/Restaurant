@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import LoginForm from "@/components/LoginForm";
 import Header from "@/components/Header";
@@ -15,6 +16,14 @@ function AppShell({ locale }: { locale: string }) {
   const { session, profile, loading } = useAuth();
   const [mode, setMode] = useState<Mode>("morning");
   const tApp = useTranslations("app");
+  const router = useRouter();
+
+  // When profile loads, redirect to the user's preferred locale if it differs from the URL
+  useEffect(() => {
+    if (profile?.language && profile.language !== locale) {
+      router.replace(`/${profile.language}`);
+    }
+  }, [profile?.language, locale]);
 
   if (loading) {
     return (
