@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { supabase, type KitchenType, type PrepItemTemplate } from "@/lib/supabase";
-import type { UserProfile, UserRole } from "@/context/AuthContext";
+import { supabase, type KitchenType, type PrepItemTemplate, localizedName } from "@/lib/supabase";
+import { useAuth, type UserProfile, type UserRole } from "@/context/AuthContext";
 
 export default function AdminView() {
   const t = useTranslations("admin");
   const tK = useTranslations("kitchen");
+  const { profile } = useAuth();
+  const locale = profile?.language || "ru";
 
   const [tab, setTab] = useState<"users" | "items">("users");
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -179,7 +181,7 @@ export default function AdminView() {
                   {kitchenItems.map((item) => (
                     <div key={item.id} className="bg-white flex items-center gap-3 px-4 py-3">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-800">{item.name}</p>
+                        <p className="text-sm font-medium text-gray-800">{localizedName(item, locale)}</p>
                         <p className="text-xs text-gray-400">{item.full_quantity} / {item.half_quantity}</p>
                       </div>
                       <button

@@ -28,6 +28,8 @@ export interface PrepTask {
   id: string;
   session_id: string;
   name: string;
+  name_en: string;
+  name_de: string;
   unit: string;
   kitchen_type: KitchenType;
   note: string | null;
@@ -40,9 +42,17 @@ export interface PrepTask {
 export interface PrepItemTemplate {
   id: string;
   name: string;
+  name_en: string;
+  name_de: string;
   unit: string;
   kitchen_type: KitchenType;
   full_quantity: string;
   half_quantity: string;
   active: boolean;
+}
+
+export function localizedName(tmpl: Pick<PrepItemTemplate, "name" | "name_en" | "name_de">, locale: string): string {
+  if (locale === "en" && tmpl.name_en) return tmpl.name_en;
+  if (locale === "de" && tmpl.name_de) return tmpl.name_de;
+  return tmpl.name;
 }

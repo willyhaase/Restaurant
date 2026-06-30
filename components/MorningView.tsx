@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { supabase, type KitchenType, type PrepTask, type QuantityMode } from "@/lib/supabase";
+import { supabase, type KitchenType, type PrepTask, type QuantityMode, localizedName } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 
 function getTodayDate(): string {
@@ -119,7 +119,7 @@ export default function MorningView() {
                     {task.done && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`font-medium text-sm transition-colors ${task.done ? "line-through text-gray-400" : "text-gray-800"}`}>{task.name}</p>
+                    <p className={`font-medium text-sm transition-colors ${task.done ? "line-through text-gray-400" : "text-gray-800"}`}>{localizedName(task, locale)}</p>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                       {task.unit && <span className={`text-xs font-semibold ${task.done ? "text-gray-300" : "text-gray-700"}`}>{task.unit}</span>}
                       {task.quantity_mode && (

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { supabase, type KitchenType, type QuantityMode, type PrepItemTemplate } from "@/lib/supabase";
+import { supabase, type KitchenType, type QuantityMode, type PrepItemTemplate, localizedName } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 
 function getTomorrowDate(): string {
@@ -94,7 +94,8 @@ export default function EveningView() {
     const tmplMap = new Map(templates.map((t) => [t.id, t]));
     const tasks = Array.from(selections.entries()).map(([templateId, mode]) => {
       const tmpl = tmplMap.get(templateId)!;
-      return { session_id: sessionId, template_id: templateId, name: tmpl.name,
+      return { session_id: sessionId, template_id: templateId,
+        name: tmpl.name, name_en: tmpl.name_en, name_de: tmpl.name_de,
         unit: mode === "full" ? tmpl.full_quantity : tmpl.half_quantity,
         kitchen_type: tmpl.kitchen_type, quantity_mode: mode, done: false };
     });
@@ -145,7 +146,7 @@ export default function EveningView() {
                     <div className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${selected ? (kitchen === "hot" ? "bg-orange-500 border-orange-500" : "bg-blue-500 border-blue-500") : "border-gray-300"}`}>
                       {selected && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
                     </div>
-                    <span className={`flex-1 text-sm font-medium ${selected ? "text-gray-900" : "text-gray-600"}`}>{tmpl.name}</span>
+                    <span className={`flex-1 text-sm font-medium ${selected ? "text-gray-900" : "text-gray-600"}`}>{localizedName(tmpl, locale)}</span>
                     {!selected && <span className="text-xs text-gray-400">{tmpl.full_quantity}</span>}
                   </button>
                   {selected && (
