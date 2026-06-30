@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { getSupabase } from "@/lib/supabase";
 
 const LOCALES = [
   { code: "ru", label: "RU" },
@@ -23,19 +22,12 @@ export default function Header({ mode, onModeChange, locale }: HeaderProps) {
   const t = useTranslations("nav");
   const tAuth = useTranslations("auth");
   const tAdmin = useTranslations("admin");
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, setLanguage } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   function switchLocale(newLocale: string) {
-    // Save preference to DB (fire and forget)
-    if (profile) {
-      getSupabase()
-        .from("user_profiles")
-        .update({ language: newLocale })
-        .eq("id", profile.id);
-    }
-    // Navigate immediately without waiting for DB
+    setLanguage(newLocale); // updates local state + DB
     const segments = pathname.split("/");
     segments[1] = newLocale;
     router.push(segments.join("/"));

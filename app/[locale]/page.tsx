@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
@@ -17,13 +17,15 @@ function AppShell({ locale }: { locale: string }) {
   const [mode, setMode] = useState<Mode>("morning");
   const tApp = useTranslations("app");
   const router = useRouter();
+  const didRedirect = useRef(false);
 
-  // When profile loads, redirect to the user's preferred locale if it differs from the URL
+  // On first profile load, redirect to user's preferred locale if it differs from the URL
   useEffect(() => {
-    if (profile?.language && profile.language !== locale) {
+    if (!didRedirect.current && profile?.language && profile.language !== locale) {
+      didRedirect.current = true;
       router.replace(`/${profile.language}`);
     }
-  }, [profile?.language, locale]);
+  }, [profile]);
 
   if (loading) {
     return (

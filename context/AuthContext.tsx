@@ -20,6 +20,7 @@ interface AuthContextValue {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<string | null>;
   signOut: () => Promise<void>;
+  setLanguage: (lang: string) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -67,8 +68,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await getSupabase().auth.signOut();
   }
 
+  function setLanguage(lang: string) {
+    setProfile((prev) => prev ? { ...prev, language: lang } : prev);
+    if (profile) {
+      getSupabase().from("user_profiles").update({ language: lang }).eq("id", profile.id);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ session, profile, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, profile, loading, signIn, signOut, setLanguage }}>
       {children}
     </AuthContext.Provider>
   );
