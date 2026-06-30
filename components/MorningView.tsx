@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { supabase, type KitchenType, type PrepTask, type QuantityMode, localizedName } from "@/lib/supabase";
-import { useAuth } from "@/context/AuthContext";
 
 function getTodayDate(): string {
   return new Date().toISOString().split("T")[0];
@@ -17,17 +16,15 @@ function formatDate(dateStr: string, locale: string): string {
   );
 }
 
-export default function MorningView() {
+export default function MorningView({ locale }: { locale: string }) {
   const t = useTranslations("morning");
   const tK = useTranslations("kitchen");
-  const { profile } = useAuth();
 
   const [tasks, setTasks] = useState<PrepTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [noSession, setNoSession] = useState(false);
 
   const todayDate = getTodayDate();
-  const locale = profile?.language || "ru";
 
   useEffect(() => { load(); }, []);
 

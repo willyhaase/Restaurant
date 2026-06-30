@@ -3,13 +3,11 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { supabase, type KitchenType, type PrepItemTemplate, localizedName } from "@/lib/supabase";
-import { useAuth, type UserProfile, type UserRole } from "@/context/AuthContext";
+import type { UserProfile, UserRole } from "@/context/AuthContext";
 
-export default function AdminView() {
+export default function AdminView({ locale }: { locale: string }) {
   const t = useTranslations("admin");
   const tK = useTranslations("kitchen");
-  const { profile } = useAuth();
-  const locale = profile?.language || "ru";
 
   const [tab, setTab] = useState<"users" | "items">("users");
   const [users, setUsers] = useState<UserProfile[]>([]);

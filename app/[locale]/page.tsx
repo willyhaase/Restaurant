@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import LoginForm from "@/components/LoginForm";
 import Header from "@/components/Header";
@@ -16,16 +15,6 @@ function AppShell({ locale }: { locale: string }) {
   const { session, profile, loading } = useAuth();
   const [mode, setMode] = useState<Mode>("morning");
   const tApp = useTranslations("app");
-  const router = useRouter();
-  const didRedirect = useRef(false);
-
-  // On first profile load, redirect to user's preferred locale if it differs from the URL
-  useEffect(() => {
-    if (!didRedirect.current && profile?.language && profile.language !== locale) {
-      didRedirect.current = true;
-      router.replace(`/${profile.language}`);
-    }
-  }, [profile]);
 
   if (loading) {
     return (
@@ -43,7 +32,6 @@ function AppShell({ locale }: { locale: string }) {
   const isChef = profile?.role === "chef" || profile?.role === "admin";
   const isAdmin = profile?.role === "admin";
 
-  // Redirect assistant away from restricted modes
   const effectiveMode = mode === "evening" && !isChef ? "morning"
     : mode === "admin" && !isAdmin ? "morning"
     : mode;
@@ -52,9 +40,9 @@ function AppShell({ locale }: { locale: string }) {
     <div className="min-h-screen bg-[#f8f7f4]">
       <Header mode={effectiveMode} onModeChange={setMode} locale={locale} />
       <main className="max-w-2xl mx-auto px-4 py-6">
-        {effectiveMode === "morning" && <MorningView />}
-        {effectiveMode === "evening" && <EveningView />}
-        {effectiveMode === "admin" && <AdminView />}
+        {effectiveMode === "morning" && <MorningView locale={locale} />}
+        {effectiveMode === "evening" && <EveningView locale={locale} />}
+        {effectiveMode === "admin" && <AdminView locale={locale} />}
       </main>
     </div>
   );

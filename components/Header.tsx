@@ -26,8 +26,8 @@ export default function Header({ mode, onModeChange, locale }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  function switchLocale(newLocale: string) {
-    setLanguage(newLocale); // updates local state + DB
+  async function switchLocale(newLocale: string) {
+    await setLanguage(newLocale); // updates DB first, then local state
     const segments = pathname.split("/");
     segments[1] = newLocale;
     router.push(segments.join("/"));
