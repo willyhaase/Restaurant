@@ -18,7 +18,7 @@ function formatDate(dateStr: string, locale: string): string {
   );
 }
 
-export default function EveningView({ locale }: { locale: string }) {
+export default function EveningView({ locale, allowedKitchens }: { locale: string; allowedKitchens: ("hot" | "cold")[] }) {
   const t = useTranslations("evening");
   const tK = useTranslations("kitchen");
 
@@ -111,8 +111,8 @@ export default function EveningView({ locale }: { locale: string }) {
     setNewItemName(""); setNewItemFull(""); setNewItemHalf(""); setShowAddForm(false);
   }
 
-  const hotTemplates = templates.filter((t) => t.kitchen_type === "hot");
-  const coldTemplates = templates.filter((t) => t.kitchen_type === "cold");
+  const hotTemplates = templates.filter((t) => t.kitchen_type === "hot" && allowedKitchens.includes("hot"));
+  const coldTemplates = templates.filter((t) => t.kitchen_type === "cold" && allowedKitchens.includes("cold"));
 
   if (loading) return <div className="flex justify-center py-20 text-gray-400">⏳</div>;
 
@@ -173,7 +173,7 @@ export default function EveningView({ locale }: { locale: string }) {
           <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3">
             <h3 className="font-semibold text-gray-700 text-sm">{t("newItem")}</h3>
             <div className="flex gap-2">
-              {(["hot", "cold"] as KitchenType[]).map((k) => (
+              {(["hot", "cold"] as KitchenType[]).filter((k) => allowedKitchens.includes(k)).map((k) => (
                 <button key={k} onClick={() => setNewItemKitchen(k)} className={`flex-1 py-2 rounded-xl text-xs font-medium border transition-all ${newItemKitchen === k ? (k === "hot" ? "bg-orange-500 text-white border-orange-500" : "bg-blue-500 text-white border-blue-500") : "bg-gray-50 text-gray-500 border-gray-200"}`}>
                   {tK(k)}
                 </button>

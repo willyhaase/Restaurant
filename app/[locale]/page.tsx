@@ -29,8 +29,15 @@ function AppShell({ locale }: { locale: string }) {
 
   if (!session) return <LoginForm />;
 
-  const isChef = profile?.role === "chef" || profile?.role === "admin";
-  const isAdmin = profile?.role === "admin";
+  const role = profile?.role ?? "assistant";
+  const isChef = role === "chef" || role === "admin";
+  const isAdmin = role === "admin";
+
+  // kitchen access by role
+  const allowedKitchens: ("hot" | "cold")[] =
+    role === "admin" ? ["hot", "cold"] :
+    role === "chef" ? ["hot"] :
+    ["cold"]; // assistant
 
   const effectiveMode = mode === "evening" && !isChef ? "morning"
     : mode === "admin" && !isAdmin ? "morning"
@@ -40,8 +47,8 @@ function AppShell({ locale }: { locale: string }) {
     <div className="min-h-screen bg-[#f8f7f4]">
       <Header mode={effectiveMode} onModeChange={setMode} locale={locale} />
       <main className="max-w-2xl mx-auto px-4 py-6">
-        {effectiveMode === "morning" && <MorningView locale={locale} />}
-        {effectiveMode === "evening" && <EveningView locale={locale} />}
+        {effectiveMode === "morning" && <MorningView locale={locale} allowedKitchens={allowedKitchens} />}
+        {effectiveMode === "evening" && <EveningView locale={locale} allowedKitchens={allowedKitchens} />}
         {effectiveMode === "admin" && <AdminView locale={locale} />}
       </main>
     </div>

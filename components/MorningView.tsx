@@ -16,7 +16,7 @@ function formatDate(dateStr: string, locale: string): string {
   );
 }
 
-export default function MorningView({ locale }: { locale: string }) {
+export default function MorningView({ locale, allowedKitchens }: { locale: string; allowedKitchens: ("hot" | "cold")[] }) {
   const t = useTranslations("morning");
   const tK = useTranslations("kitchen");
 
@@ -64,8 +64,8 @@ export default function MorningView({ locale }: { locale: string }) {
     );
   }
 
-  const hotTasks = tasks.filter((t) => t.kitchen_type === "hot");
-  const coldTasks = tasks.filter((t) => t.kitchen_type === "cold");
+  const hotTasks = tasks.filter((t) => t.kitchen_type === "hot" && allowedKitchens.includes("hot"));
+  const coldTasks = tasks.filter((t) => t.kitchen_type === "cold" && allowedKitchens.includes("cold"));
   const doneCount = tasks.filter((t) => t.done).length;
   const totalCount = tasks.length;
   const allDone = doneCount === totalCount && totalCount > 0;
