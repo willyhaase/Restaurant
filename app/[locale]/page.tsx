@@ -30,7 +30,6 @@ function AppShell({ locale }: { locale: string }) {
   if (!session) return <LoginForm />;
 
   const role = profile?.role ?? "assistant";
-  const isChef = role === "chef" || role === "admin";
   const isAdmin = role === "admin";
 
   // kitchen access by role
@@ -39,9 +38,8 @@ function AppShell({ locale }: { locale: string }) {
     role === "chef" ? ["hot"] :
     ["cold"]; // assistant
 
-  const effectiveMode = mode === "evening" && !isChef ? "morning"
-    : mode === "admin" && !isAdmin ? "morning"
-    : mode;
+  // all roles except admin can access morning+evening; only admin sees admin tab
+  const effectiveMode = mode === "admin" && !isAdmin ? "morning" : mode;
 
   return (
     <div className="min-h-screen bg-[#f8f7f4]">

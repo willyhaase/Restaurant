@@ -34,7 +34,6 @@ export default function Header({ mode, onModeChange, locale }: HeaderProps) {
   }
 
   const isAdmin = profile?.role === "admin";
-  const isChef = profile?.role === "chef" || isAdmin;
 
   return (
     <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
@@ -53,16 +52,14 @@ export default function Header({ mode, onModeChange, locale }: HeaderProps) {
             >
               ☀️ {t("morning")}
             </button>
-            {isChef && (
-              <button
-                onClick={() => onModeChange("evening")}
-                className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  mode === "evening" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
-                }`}
-              >
-                🌙 {t("evening")}
-              </button>
-            )}
+            <button
+              onClick={() => onModeChange("evening")}
+              className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                mode === "evening" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
+              }`}
+            >
+              🌙 {t("evening")}
+            </button>
             {isAdmin && (
               <button
                 onClick={() => onModeChange("admin")}
