@@ -84,6 +84,30 @@
     "approving": "Одобряю...",
     "noPending": "Нет заявок"
   },
+  "supply": {
+    "title": "Запасы",
+    "navLabel": "Запасы",
+    "statusOut": "Закончилось",
+    "statusLow": "Заканчивается",
+    "remaining": "Остаток",
+    "remainingPlaceholder": "напр. 2",
+    "report": "Сообщить",
+    "reporting": "Отправляю...",
+    "reported": "Отмечено ✓",
+    "resolve": "Заказано",
+    "resolving": "...",
+    "noFlags": "Нет сообщений",
+    "flagsTitle": "Текущие сообщения",
+    "reportedBy": "от {name}",
+    "addItem": "Добавить продукт",
+    "itemName": "Название (RU)",
+    "itemNameEn": "Название (EN)",
+    "itemNameDe": "Название (DE)",
+    "itemUnit": "Единица (кг, шт, л...)",
+    "itemCategory": "Категория (необязательно)",
+    "add": "Добавить",
+    "cancel": "Отмена"
+  },
   "kitchen": {
     "hot": "🔥 Горячая кухня",
     "cold": "❄️ Холодная кухня"

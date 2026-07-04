@@ -10,7 +10,7 @@ const LOCALES = [
   { code: "de", label: "DE" },
 ];
 
-type Mode = "evening" | "morning" | "admin";
+type Mode = "evening" | "morning" | "supply" | "admin";
 
 interface HeaderProps {
   mode: Mode;
@@ -18,10 +18,12 @@ interface HeaderProps {
   locale: string;
 }
 
+
 export default function Header({ mode, onModeChange, locale }: HeaderProps) {
   const t = useTranslations("nav");
   const tAuth = useTranslations("auth");
   const tAdmin = useTranslations("admin");
+  const tSupply = useTranslations("supply");
   const { profile, signOut, setLanguage } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -59,6 +61,14 @@ export default function Header({ mode, onModeChange, locale }: HeaderProps) {
               }`}
             >
               🌙 {t("evening")}
+            </button>
+            <button
+              onClick={() => onModeChange("supply")}
+              className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                mode === "supply" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
+              }`}
+            >
+              📦 {tSupply("navLabel")}
             </button>
             {isAdmin && (
               <button

@@ -51,6 +51,32 @@ export interface PrepItemTemplate {
   active: boolean;
 }
 
+export interface SupplyItem {
+  id: string;
+  name: string;
+  name_en: string | null;
+  name_de: string | null;
+  unit: string;
+  category: string | null;
+  active: boolean;
+  sort_order: number;
+}
+
+export interface SupplyFlag {
+  id: string;
+  item_id: string;
+  status: "low" | "out";
+  quantity_remaining: number | null;
+  unit: string | null;
+  notes: string | null;
+  reported_by_name: string | null;
+  reported_at: string;
+  resolved: boolean;
+  resolved_at: string | null;
+  resolved_by_name: string | null;
+  supply_items?: SupplyItem;
+}
+
 export function localizedName(tmpl: Pick<PrepItemTemplate, "name" | "name_en" | "name_de">, locale: string): string {
   if (locale === "en" && tmpl.name_en) return tmpl.name_en;
   if (locale === "de" && tmpl.name_de) return tmpl.name_de;

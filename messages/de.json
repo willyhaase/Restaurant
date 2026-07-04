@@ -84,6 +84,30 @@
     "approving": "Bestätige...",
     "noPending": "Keine Anfragen"
   },
+  "supply": {
+    "title": "Vorräte",
+    "navLabel": "Vorräte",
+    "statusOut": "Aufgebraucht",
+    "statusLow": "Fast leer",
+    "remaining": "Restmenge",
+    "remainingPlaceholder": "z.B. 2",
+    "report": "Melden",
+    "reporting": "Sende...",
+    "reported": "Gemeldet ✓",
+    "resolve": "Erledigt",
+    "resolving": "...",
+    "noFlags": "Keine Meldungen",
+    "flagsTitle": "Aktuelle Meldungen",
+    "reportedBy": "von {name}",
+    "addItem": "Produkt hinzufügen",
+    "itemName": "Name (DE)",
+    "itemNameRu": "Name (RU)",
+    "itemNameEn": "Name (EN)",
+    "itemUnit": "Einheit (kg, Stk, L...)",
+    "itemCategory": "Kategorie (optional)",
+    "add": "Hinzufügen",
+    "cancel": "Abbrechen"
+  },
   "kitchen": {
     "hot": "🔥 Warme Küche",
     "cold": "❄️ Kalte Küche"

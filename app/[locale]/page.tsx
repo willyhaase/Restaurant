@@ -8,9 +8,10 @@ import Header from "@/components/Header";
 import EveningView from "@/components/EveningView";
 import MorningView from "@/components/MorningView";
 import AdminView from "@/components/AdminView";
+import SupplyView from "@/components/SupplyView";
 import PendingScreen from "@/components/PendingScreen";
 
-type Mode = "evening" | "morning" | "admin";
+type Mode = "evening" | "morning" | "supply" | "admin";
 
 function AppShell({ locale }: { locale: string }) {
   const { session, profile, loading } = useAuth();
@@ -41,7 +42,7 @@ function AppShell({ locale }: { locale: string }) {
     ["cold"]; // assistant
 
   // all roles except admin can access morning+evening; only admin sees admin tab
-  const effectiveMode = mode === "admin" && !isAdmin ? "morning" : mode;
+  const effectiveMode = (mode === "admin" && !isAdmin) ? "morning" : mode;
 
   return (
     <div className="min-h-screen bg-[#f8f7f4]">
@@ -49,6 +50,7 @@ function AppShell({ locale }: { locale: string }) {
       <main className="max-w-2xl mx-auto px-4 py-6">
         {effectiveMode === "morning" && <MorningView locale={locale} allowedKitchens={allowedKitchens} />}
         {effectiveMode === "evening" && <EveningView locale={locale} allowedKitchens={allowedKitchens} />}
+        {effectiveMode === "supply" && <SupplyView locale={locale} />}
         {effectiveMode === "admin" && <AdminView locale={locale} />}
       </main>
     </div>

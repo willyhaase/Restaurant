@@ -84,6 +84,30 @@
     "approving": "Approving...",
     "noPending": "No pending requests"
   },
+  "supply": {
+    "title": "Inventory",
+    "navLabel": "Inventory",
+    "statusOut": "Out of stock",
+    "statusLow": "Running low",
+    "remaining": "Remaining",
+    "remainingPlaceholder": "e.g. 2",
+    "report": "Report",
+    "reporting": "Sending...",
+    "reported": "Reported ✓",
+    "resolve": "Resolved",
+    "resolving": "...",
+    "noFlags": "No reports",
+    "flagsTitle": "Current reports",
+    "reportedBy": "by {name}",
+    "addItem": "Add product",
+    "itemName": "Name (EN)",
+    "itemNameRu": "Name (RU)",
+    "itemNameDe": "Name (DE)",
+    "itemUnit": "Unit (kg, pcs, L...)",
+    "itemCategory": "Category (optional)",
+    "add": "Add",
+    "cancel": "Cancel"
+  },
   "kitchen": {
     "hot": "🔥 Hot Kitchen",
     "cold": "❄️ Cold Kitchen"
