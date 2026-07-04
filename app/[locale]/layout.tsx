@@ -4,7 +4,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import "../globals.css";
 
 export const metadata: Metadata = {
-  title: "Kitchen Prep",
+  title: "Hannig Saas-Fee",
 };
 
 export default async function LocaleLayout({
