@@ -5,8 +5,6 @@ import { useTranslations } from "next-intl";
 import { supabase, type SupplyItem, type SupplyFlag, localizedName } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 
-type FlagDraft = { status: "low" | "out"; quantity: string };
-
 export default function SupplyView({ locale }: { locale: string }) {
   const t = useTranslations("supply");
   const { profile } = useAuth();
@@ -14,50 +12,48 @@ export default function SupplyView({ locale }: { locale: string }) {
 
   const [items, setItems] = useState<SupplyItem[]>([]);
   const [flags, setFlags] = useState<SupplyFlag[]>([]);
-  const [drafts, setDrafts] = useState<Map<string, FlagDraft>>(new Map());
   const [submitting, setSubmitting] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<Set<string>>(new Set());
   const [resolving, setResolving] = useState<string | null>(null);
+  // per-item draft: status + optional quantity
+  const [drafts, setDrafts] = useState<Map<string, { status: "low" | "out"; quantity: string }>>(new Map());
   const [loading, setLoading] = useState(true);
 
-  // Admin: add item form
+  // Add new product form (admin)
   const [showAddForm, setShowAddForm] = useState(false);
   const [newName, setNewName] = useState("");
-  const [newNameEn, setNewNameEn] = useState("");
-  const [newNameDe, setNewNameDe] = useState("");
   const [newUnit, setNewUnit] = useState("kg");
-  const [newCategory, setNewCategory] = useState("");
+  const [newStatus, setNewStatus] = useState<"out" | "low">("out");
+  const [newQuantity, setNewQuantity] = useState("");
 
   useEffect(() => { loadData(); }, []);
 
   async function loadData() {
     setLoading(true);
     const [{ data: itemData }, { data: flagData }] = await Promise.all([
-      supabase.from("supply_items").select("*").eq("active", true).order("sort_order").order("name"),
+      supabase.from("supply_items").select("*").eq("active", true),
       supabase.from("supply_flags").select("*, supply_items(*)").eq("resolved", false).order("reported_at", { ascending: false }),
     ]);
     setItems((itemData || []).sort((a, b) =>
       localizedName(a, locale).localeCompare(localizedName(b, locale))
     ));
     setFlags(flagData || []);
-
-    // Pre-mark items that already have an active flag today
-    const alreadyFlagged = new Set<string>(
-      (flagData || []).map((f: SupplyFlag) => f.item_id)
-    );
-    setSubmitted(alreadyFlagged);
+    setSubmitted(new Set((flagData || []).map((f: SupplyFlag) => f.item_id)));
     setLoading(false);
   }
 
-  function setDraft(itemId: string, patch: Partial<FlagDraft>) {
+  function setDraft(itemId: string, patch: Partial<{ status: "low" | "out"; quantity: string }>) {
     setDrafts((prev) => {
       const next = new Map(prev);
       const cur = next.get(itemId) ?? { status: "out", quantity: "" };
       next.set(itemId, { ...cur, ...patch });
       return next;
     });
-    // clear submitted state when editing again
     setSubmitted((prev) => { const n = new Set(prev); n.delete(itemId); return n; });
+  }
+
+  function clearDraft(itemId: string) {
+    setDrafts((prev) => { const n = new Map(prev); n.delete(itemId); return n; });
   }
 
   async function report(item: SupplyItem) {
@@ -73,8 +69,8 @@ export default function SupplyView({ locale }: { locale: string }) {
       reported_by_name: profile?.full_name ?? null,
     });
     setSubmitted((prev) => new Set(prev).add(item.id));
+    clearDraft(item.id);
     setSubmitting(null);
-    // refresh flags list
     const { data } = await supabase
       .from("supply_flags").select("*, supply_items(*)").eq("resolved", false).order("reported_at", { ascending: false });
     setFlags(data || []);
@@ -88,13 +84,8 @@ export default function SupplyView({ locale }: { locale: string }) {
       resolved_by_name: profile?.full_name ?? null,
     }).eq("id", flagId);
     setFlags((prev) => prev.filter((f) => f.id !== flagId));
-    setSubmitted((prev) => {
-      const flag = flags.find((f) => f.id === flagId);
-      if (!flag) return prev;
-      const n = new Set(prev);
-      n.delete(flag.item_id);
-      return n;
-    });
+    const flag = flags.find((f) => f.id === flagId);
+    if (flag) setSubmitted((prev) => { const n = new Set(prev); n.delete(flag.item_id); return n; });
     setResolving(null);
   }
 
@@ -102,26 +93,29 @@ export default function SupplyView({ locale }: { locale: string }) {
     if (!newName.trim()) return;
     const { data } = await supabase.from("supply_items").insert({
       name: newName.trim(),
-      name_en: newNameEn.trim() || newName.trim(),
-      name_de: newNameDe.trim() || newName.trim(),
+      name_en: newName.trim(),
+      name_de: newName.trim(),
       unit: newUnit.trim() || "kg",
-      category: newCategory.trim() || null,
       active: true,
     }).select().single();
     if (data) {
-      setItems((prev) => [...prev, data].sort((a, b) =>
-        localizedName(a, locale).localeCompare(localizedName(b, locale))
-      ));
+      // immediately report with chosen status
+      await supabase.from("supply_flags").insert({
+        item_id: data.id,
+        status: newStatus,
+        quantity_remaining: newStatus === "low" && newQuantity ? parseFloat(newQuantity) : null,
+        unit: data.unit,
+        reported_by: profile?.id ?? null,
+        reported_by_name: profile?.full_name ?? null,
+      });
+      await loadData();
     }
-    setNewName(""); setNewNameEn(""); setNewNameDe(""); setNewUnit("kg"); setNewCategory("");
+    setNewName(""); setNewUnit("kg"); setNewStatus("out"); setNewQuantity("");
     setShowAddForm(false);
   }
 
   function formatTime(iso: string) {
-    return new Date(iso).toLocaleTimeString(
-      locale === "de" ? "de-DE" : "en-US",
-      { hour: "2-digit", minute: "2-digit" }
-    );
+    return new Date(iso).toLocaleTimeString(locale === "de" ? "de-DE" : "en-US", { hour: "2-digit", minute: "2-digit" });
   }
 
   if (loading) return <div className="flex justify-center py-20 text-gray-400">⏳</div>;
@@ -130,7 +124,7 @@ export default function SupplyView({ locale }: { locale: string }) {
     <div className="space-y-5 pb-8">
       <h2 className="text-xl font-bold text-gray-800">{t("title")}</h2>
 
-      {/* Active flags summary — visible to all, prominent for admin */}
+      {/* Active flags summary */}
       {flags.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t("flagsTitle")}</h3>
@@ -144,9 +138,7 @@ export default function SupplyView({ locale }: { locale: string }) {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-medium text-sm text-gray-800">{name}</span>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                        flag.status === "out"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-yellow-100 text-yellow-700"
+                        flag.status === "out" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"
                       }`}>
                         {flag.status === "out" ? t("statusOut") : t("statusLow")}
                       </span>
@@ -176,23 +168,20 @@ export default function SupplyView({ locale }: { locale: string }) {
         </div>
       )}
 
-      {/* Items list for reporting */}
+      {/* Items list */}
       <div className="space-y-2">
         {items.map((item) => {
           const draft = drafts.get(item.id);
           const isSubmitted = submitted.has(item.id);
-          const isActive = !!draft;
 
           return (
             <div key={item.id} className={`bg-white rounded-2xl border transition-colors ${
-              isSubmitted ? "border-green-200" : isActive ? "border-gray-300" : "border-gray-200"
+              isSubmitted ? "border-green-200" : draft ? "border-gray-300" : "border-gray-200"
             }`}>
               <div className="flex items-center gap-3 px-4 py-3">
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm text-gray-800">{localizedName(item, locale)}</p>
-                  {item.category && <p className="text-xs text-gray-400">{item.category}</p>}
                 </div>
-
                 {isSubmitted ? (
                   <span className="text-xs font-medium text-green-600">{t("reported")}</span>
                 ) : (
@@ -200,9 +189,7 @@ export default function SupplyView({ locale }: { locale: string }) {
                     <button
                       onClick={() => setDraft(item.id, { status: "low", quantity: draft?.quantity ?? "" })}
                       className={`text-xs px-2.5 py-1.5 rounded-lg font-medium border transition-all ${
-                        draft?.status === "low"
-                          ? "bg-yellow-500 text-white border-yellow-500"
-                          : "bg-gray-50 text-gray-500 border-gray-200"
+                        draft?.status === "low" ? "bg-yellow-500 text-white border-yellow-500" : "bg-gray-50 text-gray-500 border-gray-200"
                       }`}
                     >
                       {t("statusLow")}
@@ -210,9 +197,7 @@ export default function SupplyView({ locale }: { locale: string }) {
                     <button
                       onClick={() => setDraft(item.id, { status: "out", quantity: "" })}
                       className={`text-xs px-2.5 py-1.5 rounded-lg font-medium border transition-all ${
-                        draft?.status === "out"
-                          ? "bg-red-500 text-white border-red-500"
-                          : "bg-gray-50 text-gray-500 border-gray-200"
+                        draft?.status === "out" ? "bg-red-500 text-white border-red-500" : "bg-gray-50 text-gray-500 border-gray-200"
                       }`}
                     >
                       {t("statusOut")}
@@ -221,13 +206,11 @@ export default function SupplyView({ locale }: { locale: string }) {
                 )}
               </div>
 
-              {isActive && !isSubmitted && (
+              {draft && !isSubmitted && (
                 <div className="px-4 pb-3 flex gap-2">
                   {draft.status === "low" && (
                     <input
-                      type="number"
-                      min="0"
-                      step="0.1"
+                      type="number" min="0" step="0.1"
                       placeholder={`${t("remaining")} (${item.unit})`}
                       value={draft.quantity}
                       onChange={(e) => setDraft(item.id, { quantity: e.target.value })}
@@ -242,7 +225,7 @@ export default function SupplyView({ locale }: { locale: string }) {
                     {submitting === item.id ? t("reporting") : t("report")}
                   </button>
                   <button
-                    onClick={() => setDrafts((prev) => { const n = new Map(prev); n.delete(item.id); return n; })}
+                    onClick={() => clearDraft(item.id)}
                     className="px-3 py-2 border border-gray-200 rounded-xl text-sm text-gray-500"
                   >
                     ✕
@@ -254,7 +237,7 @@ export default function SupplyView({ locale }: { locale: string }) {
         })}
       </div>
 
-      {/* Admin: add product */}
+      {/* Add new product */}
       {isAdmin && (
         <div>
           {!showAddForm ? (
@@ -266,32 +249,63 @@ export default function SupplyView({ locale }: { locale: string }) {
             </button>
           ) : (
             <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3">
-              <input type="text" placeholder={t("itemName")} value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300" />
+              {/* Name + unit */}
               <div className="flex gap-2">
-                <input type="text" placeholder="Name (EN)" value={newNameEn}
-                  onChange={(e) => setNewNameEn(e.target.value)}
-                  className="flex-1 px-3 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none" />
-                <input type="text" placeholder="Name (DE)" value={newNameDe}
-                  onChange={(e) => setNewNameDe(e.target.value)}
-                  className="flex-1 px-3 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none" />
-              </div>
-              <div className="flex gap-2">
-                <input type="text" placeholder={t("itemUnit")} value={newUnit}
+                <input
+                  type="text" placeholder={t("itemName")} value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                />
+                <input
+                  type="text" placeholder={t("itemUnit")} value={newUnit}
                   onChange={(e) => setNewUnit(e.target.value)}
-                  className="flex-1 px-3 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none" />
-                <input type="text" placeholder={t("itemCategory")} value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  className="flex-1 px-3 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none" />
+                  className="w-20 px-3 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                />
               </div>
+
+              {/* Status */}
               <div className="flex gap-2">
-                <button onClick={() => setShowAddForm(false)}
-                  className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-500">
+                <button
+                  onClick={() => setNewStatus("low")}
+                  className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all ${
+                    newStatus === "low" ? "bg-yellow-500 text-white border-yellow-500" : "bg-gray-50 text-gray-500 border-gray-200"
+                  }`}
+                >
+                  {t("statusLow")}
+                </button>
+                <button
+                  onClick={() => setNewStatus("out")}
+                  className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all ${
+                    newStatus === "out" ? "bg-red-500 text-white border-red-500" : "bg-gray-50 text-gray-500 border-gray-200"
+                  }`}
+                >
+                  {t("statusOut")}
+                </button>
+              </div>
+
+              {/* Quantity if low */}
+              {newStatus === "low" && (
+                <input
+                  type="number" min="0" step="0.1"
+                  placeholder={`${t("remaining")} (${newUnit || "kg"})`}
+                  value={newQuantity}
+                  onChange={(e) => setNewQuantity(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                />
+              )}
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setShowAddForm(false); setNewName(""); setNewUnit("kg"); setNewStatus("out"); setNewQuantity(""); }}
+                  className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-500"
+                >
                   {t("cancel")}
                 </button>
-                <button onClick={addItem} disabled={!newName.trim()}
-                  className="flex-1 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold disabled:opacity-40">
+                <button
+                  onClick={addItem}
+                  disabled={!newName.trim()}
+                  className="flex-1 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold disabled:opacity-40"
+                >
                   {t("add")}
                 </button>
               </div>
