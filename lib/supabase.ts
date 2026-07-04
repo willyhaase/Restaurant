@@ -77,7 +77,7 @@ export interface SupplyFlag {
   supply_items?: SupplyItem;
 }
 
-export function localizedName(tmpl: Pick<PrepItemTemplate, "name" | "name_en" | "name_de">, locale: string): string {
+export function localizedName(tmpl: { name: string; name_en?: string | null; name_de?: string | null }, locale: string): string {
   if (locale === "en" && tmpl.name_en) return tmpl.name_en;
   if (locale === "de" && tmpl.name_de) return tmpl.name_de;
   return tmpl.name;
