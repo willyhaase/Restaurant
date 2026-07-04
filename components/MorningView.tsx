@@ -35,8 +35,11 @@ export default function MorningView({ locale, allowedKitchens }: { locale: strin
     if (!session) { setNoSession(true); setLoading(false); return; }
     const { data: taskData } = await supabase
       .from("prep_tasks").select("*").eq("session_id", session.id)
-      .order("kitchen_type").order("created_at");
-    setTasks(taskData || []);
+      .order("kitchen_type");
+    setTasks((taskData || []).sort((a, b) => {
+      if (a.kitchen_type !== b.kitchen_type) return 0;
+      return localizedName(a, locale).localeCompare(localizedName(b, locale));
+    }));
     setLoading(false);
   }
 

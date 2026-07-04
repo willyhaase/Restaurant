@@ -40,8 +40,8 @@ export default function EveningView({ locale, allowedKitchens }: { locale: strin
   async function loadData() {
     setLoading(true);
     const { data: tmpl } = await supabase
-      .from("prep_item_templates").select("*").eq("active", true).order("name");
-    setTemplates(tmpl || []);
+      .from("prep_item_templates").select("*").eq("active", true);
+    setTemplates((tmpl || []).sort((a, b) => localizedName(a, locale).localeCompare(localizedName(b, locale))));
 
     const { data: session } = await supabase
       .from("prep_sessions").select("id").eq("prep_date", tomorrowDate).single();
