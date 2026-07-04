@@ -30,12 +30,6 @@
     "message": "Ihre Anfrage wurde an den Administrator gesendet. Sie erhalten Zugang nach der Bestätigung.",
     "logout": "Abmelden"
   },
-  "admin": {
-    "pending": "Warten auf Bestätigung",
-    "approve": "Bestätigen",
-    "approving": "Bestätige...",
-    "noPending": "Keine Anfragen"
-  },
   "evening": {
     "title": "Vorbereitung für morgen",
     "selected": "Ausgewählt: {count} Positionen",
@@ -83,7 +77,11 @@
     "halfQty": "Halbe Menge",
     "deleteConfirm": "Diese Position löschen?",
     "addItem": "Hinzufügen",
-    "itemName": "Bezeichnung"
+    "itemName": "Bezeichnung",
+    "pending": "Warten auf Bestätigung",
+    "approve": "Bestätigen",
+    "approving": "Bestätige...",
+    "noPending": "Keine Anfragen"
   },
   "kitchen": {
     "hot": "🔥 Warme Küche",

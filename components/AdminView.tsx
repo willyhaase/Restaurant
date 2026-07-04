@@ -9,7 +9,7 @@ export default function AdminView({ locale }: { locale: string }) {
   const t = useTranslations("admin");
   const tK = useTranslations("kitchen");
 
-  const [tab, setTab] = useState<"pending" | "users" | "items">("pending");
+  const [tab, setTab] = useState<"items" | "users" | "pending">("items");
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [items, setItems] = useState<PrepItemTemplate[]>([]);
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -78,7 +78,7 @@ export default function AdminView({ locale }: { locale: string }) {
 
       {/* Tab switcher */}
       <div className="flex rounded-xl overflow-hidden border border-gray-200 bg-gray-100 p-1 gap-1">
-        {(["pending", "users", "items"] as const).map((tab_) => (
+        {(["items", "users", "pending"] as const).map((tab_) => (
           <button
             key={tab_}
             onClick={() => setTab(tab_)}
@@ -86,7 +86,7 @@ export default function AdminView({ locale }: { locale: string }) {
               tab === tab_ ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
             }`}
           >
-            {tab_ === "pending" ? t("pending") : tab_ === "users" ? t("users") : t("prepItems")}
+            {tab_ === "items" ? t("prepItems") : tab_ === "users" ? t("users") : t("pending")}
           </button>
         ))}
       </div>
