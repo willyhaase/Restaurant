@@ -53,7 +53,8 @@
     "noSession": "No list created",
     "noSessionHint": "Create tomorrow's prep list in the Evening tab.",
     "fullRecipe": "full recipe",
-    "half": "half"
+    "half": "half",
+    "preparedBy": "List created by {name}"
   },
   "admin": {
     "title": "Admin",

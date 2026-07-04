@@ -21,6 +21,7 @@ export default function MorningView({ locale, allowedKitchens }: { locale: strin
   const tK = useTranslations("kitchen");
 
   const [tasks, setTasks] = useState<PrepTask[]>([]);
+  const [createdByName, setCreatedByName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [noSession, setNoSession] = useState(false);
 
@@ -31,8 +32,9 @@ export default function MorningView({ locale, allowedKitchens }: { locale: strin
   async function load() {
     setLoading(true);
     const { data: session } = await supabase
-      .from("prep_sessions").select("id").eq("prep_date", todayDate).single();
+      .from("prep_sessions").select("id, created_by_name").eq("prep_date", todayDate).single();
     if (!session) { setNoSession(true); setLoading(false); return; }
+    setCreatedByName(session.created_by_name ?? null);
     const { data: taskData } = await supabase
       .from("prep_tasks").select("*").eq("session_id", session.id)
       .order("kitchen_type");
@@ -84,6 +86,9 @@ export default function MorningView({ locale, allowedKitchens }: { locale: strin
       <div className="text-center">
         <p className="text-sm text-gray-500 uppercase tracking-wide font-medium">{t("title")}</p>
         <h2 className="text-xl font-bold text-gray-800 capitalize mt-0.5">{formatDate(todayDate, locale)}</h2>
+        {createdByName && (
+          <p className="text-xs text-gray-400 mt-1">{t("preparedBy", { name: createdByName })}</p>
+        )}
       </div>
 
       {/* Progress */}

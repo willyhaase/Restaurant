@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { supabase, type KitchenType, type QuantityMode, type PrepItemTemplate, localizedName } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 
 function getTomorrowDate(): string {
   const d = new Date();
@@ -21,6 +22,7 @@ function formatDate(dateStr: string, locale: string): string {
 export default function EveningView({ locale, allowedKitchens }: { locale: string; allowedKitchens: ("hot" | "cold")[] }) {
   const t = useTranslations("evening");
   const tK = useTranslations("kitchen");
+  const { profile } = useAuth();
 
   const [templates, setTemplates] = useState<PrepItemTemplate[]>([]);
   const [selections, setSelections] = useState<Map<string, QuantityMode>>(new Map());
@@ -85,7 +87,11 @@ export default function EveningView({ locale, allowedKitchens }: { locale: strin
       await supabase.from("prep_tasks").delete().eq("session_id", sessionId);
     } else {
       const { data: created } = await supabase
-        .from("prep_sessions").insert({ prep_date: tomorrowDate }).select("id").single();
+        .from("prep_sessions").insert({
+          prep_date: tomorrowDate,
+          created_by: profile?.id ?? null,
+          created_by_name: profile?.full_name ?? null,
+        }).select("id").single();
       sessionId = created!.id;
     }
     const tmplMap = new Map(templates.map((t) => [t.id, t]));

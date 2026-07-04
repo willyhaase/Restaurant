@@ -53,7 +53,8 @@
     "noSession": "Keine Liste erstellt",
     "noSessionHint": "Erstellen Sie die Vorbereitungsliste im Abend-Tab.",
     "fullRecipe": "volles Rezept",
-    "half": "halbe Menge"
+    "half": "halbe Menge",
+    "preparedBy": "Liste erstellt von {name}"
   },
   "admin": {
     "title": "Verwaltung",
