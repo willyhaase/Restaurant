@@ -12,6 +12,7 @@ export interface UserProfile {
   full_name: string;
   role: UserRole;
   language: string;
+  approved: boolean;
 }
 
 interface AuthContextValue {
@@ -19,6 +20,7 @@ interface AuthContextValue {
   profile: UserProfile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<string | null>;
+  signUp: (email: string, password: string, fullName: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   setLanguage: (lang: string) => Promise<void>;
 }
@@ -64,6 +66,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return error ? error.message : null;
   }
 
+  async function signUp(email: string, password: string, fullName: string): Promise<string | null> {
+    const { error } = await getSupabase().auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName } },
+    });
+    return error ? error.message : null;
+  }
+
   async function signOut() {
     await getSupabase().auth.signOut();
   }
@@ -76,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ session, profile, loading, signIn, signOut, setLanguage }}>
+    <AuthContext.Provider value={{ session, profile, loading, signIn, signUp, signOut, setLanguage }}>
       {children}
     </AuthContext.Provider>
   );
