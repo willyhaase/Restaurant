@@ -9,7 +9,7 @@ export default function AdminView({ locale }: { locale: string }) {
   const t = useTranslations("admin");
   const tK = useTranslations("kitchen");
 
-  const [tab, setTab] = useState<"users" | "items">("users");
+  const [tab, setTab] = useState<"pending" | "users" | "items">("pending");
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [items, setItems] = useState<PrepItemTemplate[]>([]);
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -34,6 +34,13 @@ export default function AdminView({ locale }: { locale: string }) {
     setUsers(u || []);
     setItems(i || []);
     setLoading(false);
+  }
+
+  async function approveUser(userId: string) {
+    setSavingId(userId);
+    await supabase.from("user_profiles").update({ approved: true }).eq("id", userId);
+    setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, approved: true } : u));
+    setSavingId(null);
   }
 
   async function updateRole(userId: string, role: UserRole) {
@@ -71,7 +78,7 @@ export default function AdminView({ locale }: { locale: string }) {
 
       {/* Tab switcher */}
       <div className="flex rounded-xl overflow-hidden border border-gray-200 bg-gray-100 p-1 gap-1">
-        {(["users", "items"] as const).map((tab_) => (
+        {(["pending", "users", "items"] as const).map((tab_) => (
           <button
             key={tab_}
             onClick={() => setTab(tab_)}
@@ -79,10 +86,37 @@ export default function AdminView({ locale }: { locale: string }) {
               tab === tab_ ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
             }`}
           >
-            {tab_ === "users" ? t("users") : t("prepItems")}
+            {tab_ === "pending" ? t("pending") : tab_ === "users" ? t("users") : t("prepItems")}
           </button>
         ))}
       </div>
+
+      {tab === "pending" && (() => {
+        const pending = users.filter((u) => !u.approved);
+        return (
+          <div className="space-y-2">
+            {pending.length === 0 ? (
+              <p className="text-center text-sm text-gray-400 py-8">{t("noPending")}</p>
+            ) : pending.map((user) => (
+              <div key={user.id} className="bg-white rounded-2xl border border-gray-200 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-medium text-gray-800 text-sm truncate">{user.full_name || "—"}</p>
+                    <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                  </div>
+                  <button
+                    onClick={() => approveUser(user.id)}
+                    disabled={savingId === user.id}
+                    className="flex-shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium bg-green-500 text-white disabled:opacity-50"
+                  >
+                    {savingId === user.id ? t("approving") : t("approve")}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
 
       {tab === "users" && (
         <div className="space-y-2">

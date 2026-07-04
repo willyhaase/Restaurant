@@ -16,7 +16,25 @@
     "fullName": "Name",
     "signingIn": "Anmelden...",
     "invalidCredentials": "Ungültige E-Mail oder Passwort",
-    "error": "Anmeldefehler"
+    "error": "Anmeldefehler",
+    "register": "Registrieren",
+    "registering": "Registrierung...",
+    "haveAccount": "Bereits ein Konto?",
+    "noAccount": "Kein Konto?",
+    "registerSuccess": "Anfrage gesendet",
+    "emailTaken": "Diese E-Mail ist bereits registriert",
+    "registerError": "Registrierungsfehler"
+  },
+  "pending": {
+    "title": "Warten auf Bestätigung",
+    "message": "Ihre Anfrage wurde an den Administrator gesendet. Sie erhalten Zugang nach der Bestätigung.",
+    "logout": "Abmelden"
+  },
+  "admin": {
+    "pending": "Warten auf Bestätigung",
+    "approve": "Bestätigen",
+    "approving": "Bestätige...",
+    "noPending": "Keine Anfragen"
   },
   "evening": {
     "title": "Vorbereitung für morgen",

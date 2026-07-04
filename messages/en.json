@@ -16,7 +16,25 @@
     "fullName": "Full Name",
     "signingIn": "Signing in...",
     "invalidCredentials": "Invalid email or password",
-    "error": "Sign in error"
+    "error": "Sign in error",
+    "register": "Register",
+    "registering": "Registering...",
+    "haveAccount": "Already have an account?",
+    "noAccount": "No account?",
+    "registerSuccess": "Request sent",
+    "emailTaken": "This email is already registered",
+    "registerError": "Registration error"
+  },
+  "pending": {
+    "title": "Awaiting Approval",
+    "message": "Your request has been sent to the admin. You will get access once approved.",
+    "logout": "Sign Out"
+  },
+  "admin": {
+    "pending": "Pending Approval",
+    "approve": "Approve",
+    "approving": "Approving...",
+    "noPending": "No pending requests"
   },
   "evening": {
     "title": "Tomorrow's Prep",

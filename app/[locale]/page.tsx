@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import EveningView from "@/components/EveningView";
 import MorningView from "@/components/MorningView";
 import AdminView from "@/components/AdminView";
+import PendingScreen from "@/components/PendingScreen";
 
 type Mode = "evening" | "morning" | "admin";
 
@@ -28,6 +29,7 @@ function AppShell({ locale }: { locale: string }) {
   }
 
   if (!session) return <LoginForm />;
+  if (profile && !profile.approved) return <PendingScreen />;
 
   const role = profile?.role ?? "assistant";
   const isAdmin = role === "admin";

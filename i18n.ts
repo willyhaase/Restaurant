@@ -6,7 +6,7 @@ type Locale = (typeof VALID_LOCALES)[number];
 export default getRequestConfig(async ({ requestLocale }) => {
   let locale = (await requestLocale) as Locale;
   if (!locale || !VALID_LOCALES.includes(locale)) {
-    locale = "ru";
+    locale = "de";
   }
   return {
     locale,
