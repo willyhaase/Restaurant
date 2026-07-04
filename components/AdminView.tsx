@@ -16,7 +16,6 @@ export default function AdminView({ locale }: { locale: string }) {
   const [loading, setLoading] = useState(true);
 
   // New item form
-  const [newName, setNewName] = useState("");
   const [newNameEn, setNewNameEn] = useState("");
   const [newNameDe, setNewNameDe] = useState("");
   const [newKitchen, setNewKitchen] = useState<KitchenType>("hot");
@@ -56,14 +55,15 @@ export default function AdminView({ locale }: { locale: string }) {
   }
 
   async function addItem() {
-    if (!newName.trim() || !newFull.trim()) return;
+    const baseName = newNameDe.trim() || newNameEn.trim();
+    if (!baseName || !newFull.trim()) return;
     const { data } = await supabase
       .from("prep_item_templates")
-      .insert({ name: newName.trim(), name_en: newNameEn.trim() || newName.trim(), name_de: newNameDe.trim() || newName.trim(),
+      .insert({ name: baseName, name_en: newNameEn.trim() || baseName, name_de: newNameDe.trim() || baseName,
         kitchen_type: newKitchen, full_quantity: newFull.trim(), half_quantity: newHalf.trim(), unit: "", active: true })
       .select().single();
     if (data) setItems((prev) => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
-    setNewName(""); setNewNameEn(""); setNewNameDe(""); setNewFull(""); setNewHalf("");
+    setNewNameEn(""); setNewNameDe(""); setNewFull(""); setNewHalf("");
   }
 
   const ROLES: UserRole[] = ["admin", "chef", "assistant"];
@@ -177,21 +177,16 @@ export default function AdminView({ locale }: { locale: string }) {
                 </button>
               ))}
             </div>
-            <input
-              type="text" placeholder={`${t("itemName")} (RU)`} value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            />
             <div className="flex gap-2">
               <input
                 type="text" placeholder={`${t("itemName")} (EN)`} value={newNameEn}
                 onChange={(e) => setNewNameEn(e.target.value)}
-                className="flex-1 px-3 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none"
+                className="flex-1 px-3 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
               <input
                 type="text" placeholder={`${t("itemName")} (DE)`} value={newNameDe}
                 onChange={(e) => setNewNameDe(e.target.value)}
-                className="flex-1 px-3 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none"
+                className="flex-1 px-3 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
             <div className="flex gap-2">
@@ -208,7 +203,7 @@ export default function AdminView({ locale }: { locale: string }) {
             </div>
             <button
               onClick={addItem}
-              disabled={!newName.trim() || !newFull.trim()}
+              disabled={!(newNameDe.trim() || newNameEn.trim()) || !newFull.trim()}
               className="w-full py-3 bg-gray-900 text-white rounded-xl text-sm font-semibold disabled:opacity-40"
             >
               {t("addItem")}
