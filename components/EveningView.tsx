@@ -14,7 +14,7 @@ function getTomorrowDate(): string {
 function formatDate(dateStr: string, locale: string): string {
   const d = new Date(dateStr + "T00:00:00");
   return d.toLocaleDateString(
-    locale === "ru" ? "ru-RU" : locale === "de" ? "de-DE" : "en-US",
+    locale === "de" ? "de-DE" : "en-US",
     { weekday: "long", day: "numeric", month: "long" }
   );
 }

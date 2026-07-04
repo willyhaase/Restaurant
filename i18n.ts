@@ -1,6 +1,6 @@
 import { getRequestConfig } from "next-intl/server";
 
-const VALID_LOCALES = ["ru", "en", "de"] as const;
+const VALID_LOCALES = ["en", "de"] as const;
 type Locale = (typeof VALID_LOCALES)[number];
 
 export default getRequestConfig(async ({ requestLocale }) => {

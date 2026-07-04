@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 const LOCALES = [
-  { code: "ru", label: "RU" },
   { code: "en", label: "EN" },
   { code: "de", label: "DE" },
 ];

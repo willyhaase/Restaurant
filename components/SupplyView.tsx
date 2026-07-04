@@ -119,7 +119,7 @@ export default function SupplyView({ locale }: { locale: string }) {
 
   function formatTime(iso: string) {
     return new Date(iso).toLocaleTimeString(
-      locale === "ru" ? "ru-RU" : locale === "de" ? "de-DE" : "en-US",
+      locale === "de" ? "de-DE" : "en-US",
       { hour: "2-digit", minute: "2-digit" }
     );
   }
