@@ -56,7 +56,7 @@ export default function AdminView({ locale }: { locale: string }) {
 
   async function addItem() {
     const baseName = newNameDe.trim() || newNameEn.trim();
-    if (!baseName || !newFull.trim()) return;
+    if (!baseName) return;
     const { data } = await supabase
       .from("prep_item_templates")
       .insert({ name: baseName, name_en: newNameEn.trim() || baseName, name_de: newNameDe.trim() || baseName,
@@ -203,7 +203,7 @@ export default function AdminView({ locale }: { locale: string }) {
             </div>
             <button
               onClick={addItem}
-              disabled={!(newNameDe.trim() || newNameEn.trim()) || !newFull.trim()}
+              disabled={!(newNameDe.trim() || newNameEn.trim())}
               className="w-full py-3 bg-gray-900 text-white rounded-xl text-sm font-semibold disabled:opacity-40"
             >
               {t("addItem")}

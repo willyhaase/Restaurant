@@ -79,6 +79,7 @@ export default function MorningView({ locale, allowedKitchens }: { locale: strin
   const MODE_LABELS: Record<QuantityMode, string> = {
     full: t("fullRecipe"),
     half: t("half"),
+    custom: t("custom"),
   };
 
   return (

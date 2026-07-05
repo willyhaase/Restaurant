@@ -16,7 +16,7 @@ export const supabase = {
 };
 
 export type KitchenType = "hot" | "cold";
-export type QuantityMode = "full" | "half";
+export type QuantityMode = "full" | "half" | "custom";
 
 export interface PrepSession {
   id: string;

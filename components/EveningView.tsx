@@ -26,6 +26,7 @@ export default function EveningView({ locale, allowedKitchens }: { locale: strin
 
   const [templates, setTemplates] = useState<PrepItemTemplate[]>([]);
   const [selections, setSelections] = useState<Map<string, QuantityMode>>(new Map());
+  const [customQty, setCustomQty] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -49,13 +50,20 @@ export default function EveningView({ locale, allowedKitchens }: { locale: strin
       .from("prep_sessions").select("id").eq("prep_date", tomorrowDate).single();
     if (session) {
       const { data: tasks } = await supabase
-        .from("prep_tasks").select("template_id, quantity_mode")
+        .from("prep_tasks").select("template_id, quantity_mode, unit")
         .eq("session_id", session.id).not("template_id", "is", null);
       if (tasks) {
-        const map = new Map<string, QuantityMode>();
-        tasks.forEach((t) => { if (t.template_id && t.quantity_mode) map.set(t.template_id, t.quantity_mode); });
-        setSelections(map);
-        if (map.size > 0) setSaved(true);
+        const selMap = new Map<string, QuantityMode>();
+        const qtyMap = new Map<string, string>();
+        tasks.forEach((t) => {
+          if (t.template_id && t.quantity_mode) {
+            selMap.set(t.template_id, t.quantity_mode);
+            if (t.quantity_mode === "custom") qtyMap.set(t.template_id, t.unit ?? "");
+          }
+        });
+        setSelections(selMap);
+        setCustomQty(qtyMap);
+        if (selMap.size > 0) setSaved(true);
       }
     }
     setLoading(false);
@@ -76,6 +84,11 @@ export default function EveningView({ locale, allowedKitchens }: { locale: strin
     setSaved(false);
   }
 
+  function updateQty(templateId: string, val: string) {
+    setCustomQty((prev) => { const next = new Map(prev); next.set(templateId, val); return next; });
+    setSaved(false);
+  }
+
   async function saveList() {
     if (selections.size === 0) return;
     setSaving(true);
@@ -84,7 +97,10 @@ export default function EveningView({ locale, allowedKitchens }: { locale: strin
       .from("prep_sessions").select("id").eq("prep_date", tomorrowDate).single();
     if (existing) {
       sessionId = existing.id;
-      await supabase.from("prep_tasks").delete().eq("session_id", sessionId);
+      // Only delete tasks for kitchens this user manages — preserves other kitchen's tasks
+      await supabase.from("prep_tasks").delete()
+        .eq("session_id", sessionId)
+        .in("kitchen_type", allowedKitchens);
     } else {
       const { data: created } = await supabase
         .from("prep_sessions").insert({
@@ -97,10 +113,15 @@ export default function EveningView({ locale, allowedKitchens }: { locale: strin
     const tmplMap = new Map(templates.map((t) => [t.id, t]));
     const tasks = Array.from(selections.entries()).map(([templateId, mode]) => {
       const tmpl = tmplMap.get(templateId)!;
-      return { session_id: sessionId, template_id: templateId,
+      let unit: string;
+      if (mode === "full") unit = tmpl.full_quantity;
+      else if (mode === "half") unit = tmpl.half_quantity;
+      else unit = customQty.get(templateId) ?? "";
+      return {
+        session_id: sessionId, template_id: templateId,
         name: tmpl.name, name_en: tmpl.name_en, name_de: tmpl.name_de,
-        unit: mode === "full" ? tmpl.full_quantity : tmpl.half_quantity,
-        kitchen_type: tmpl.kitchen_type, quantity_mode: mode, done: false };
+        unit, kitchen_type: tmpl.kitchen_type, quantity_mode: mode, done: false,
+      };
     });
     await supabase.from("prep_tasks").insert(tasks);
     setSaving(false);
@@ -108,12 +129,15 @@ export default function EveningView({ locale, allowedKitchens }: { locale: strin
   }
 
   async function addCustomItem() {
-    if (!newItemName.trim() || !newItemFull.trim()) return;
+    if (!newItemName.trim()) return;
     const { data } = await supabase.from("prep_item_templates")
-      .insert({ name: newItemName.trim(), kitchen_type: newItemKitchen,
-        full_quantity: newItemFull.trim(), half_quantity: newItemHalf.trim(), unit: "", active: true })
+      .insert({
+        name: newItemName.trim(), name_en: newItemName.trim(), name_de: newItemName.trim(),
+        kitchen_type: newItemKitchen,
+        full_quantity: newItemFull.trim(), half_quantity: newItemHalf.trim(), unit: "", active: true,
+      })
       .select().single();
-    if (data) setTemplates((prev) => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
+    if (data) setTemplates((prev) => [...prev, data].sort((a, b) => localizedName(a, locale).localeCompare(localizedName(b, locale))));
     setNewItemName(""); setNewItemFull(""); setNewItemHalf(""); setShowAddForm(false);
   }
 
@@ -134,40 +158,68 @@ export default function EveningView({ locale, allowedKitchens }: { locale: strin
         )}
       </div>
 
-      {([["hot", hotTemplates], ["cold", coldTemplates]] as [KitchenType, PrepItemTemplate[]][]).map(([kitchen, items]) => (
-        <div key={kitchen} className="space-y-2">
-          <h3 className={`font-bold text-sm px-1 ${kitchen === "hot" ? "text-orange-600" : "text-blue-600"}`}>
-            {tK(kitchen)}
-          </h3>
-          <div className={`rounded-2xl border overflow-hidden divide-y ${kitchen === "hot" ? "border-orange-200 divide-orange-100" : "border-blue-200 divide-blue-100"}`}>
-            {items.map((tmpl) => {
-              const selected = selections.has(tmpl.id);
-              const mode = selections.get(tmpl.id) ?? "full";
-              return (
-                <div key={tmpl.id} className={`bg-white transition-colors ${selected ? (kitchen === "hot" ? "bg-orange-50" : "bg-blue-50") : ""}`}>
-                  <button onClick={() => toggle(tmpl.id)} className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
-                    <div className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${selected ? (kitchen === "hot" ? "bg-orange-500 border-orange-500" : "bg-blue-500 border-blue-500") : "border-gray-300"}`}>
-                      {selected && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                    </div>
-                    <span className={`flex-1 text-sm font-medium ${selected ? "text-gray-900" : "text-gray-600"}`}>{localizedName(tmpl, locale)}</span>
-                    {!selected && <span className="text-xs text-gray-400">{tmpl.full_quantity}</span>}
-                  </button>
-                  {selected && (
-                    <div className="flex gap-2 px-4 pb-3">
-                      <button onClick={() => setMode(tmpl.id, "full")} className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${mode === "full" ? (kitchen === "hot" ? "bg-orange-500 text-white border-orange-500" : "bg-blue-500 text-white border-blue-500") : "bg-white text-gray-500 border-gray-200"}`}>
-                        {t("fullRecipe")}<span className="block font-normal opacity-80">{tmpl.full_quantity}</span>
-                      </button>
-                      <button onClick={() => setMode(tmpl.id, "half")} className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${mode === "half" ? (kitchen === "hot" ? "bg-orange-500 text-white border-orange-500" : "bg-blue-500 text-white border-blue-500") : "bg-white text-gray-500 border-gray-200"}`}>
-                        {t("half")}<span className="block font-normal opacity-80">{tmpl.half_quantity}</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+      {([["hot", hotTemplates], ["cold", coldTemplates]] as [KitchenType, PrepItemTemplate[]][]).map(([kitchen, items]) => {
+        if (!items.length) return null;
+        return (
+          <div key={kitchen} className="space-y-2">
+            <h3 className={`font-bold text-sm px-1 ${kitchen === "hot" ? "text-orange-600" : "text-blue-600"}`}>
+              {tK(kitchen)}
+            </h3>
+            <div className={`rounded-2xl border overflow-hidden divide-y ${kitchen === "hot" ? "border-orange-200 divide-orange-100" : "border-blue-200 divide-blue-100"}`}>
+              {items.map((tmpl) => {
+                const selected = selections.has(tmpl.id);
+                const mode = selections.get(tmpl.id) ?? "full";
+                return (
+                  <div key={tmpl.id} className={`bg-white transition-colors ${selected ? (kitchen === "hot" ? "bg-orange-50" : "bg-blue-50") : ""}`}>
+                    <button onClick={() => toggle(tmpl.id)} className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
+                      <div className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${selected ? (kitchen === "hot" ? "bg-orange-500 border-orange-500" : "bg-blue-500 border-blue-500") : "border-gray-300"}`}>
+                        {selected && <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                      </div>
+                      <span className={`flex-1 text-sm font-medium ${selected ? "text-gray-900" : "text-gray-600"}`}>{localizedName(tmpl, locale)}</span>
+                      {!selected && tmpl.full_quantity && <span className="text-xs text-gray-400">{tmpl.full_quantity}</span>}
+                    </button>
+                    {selected && (
+                      <div className="px-4 pb-3 space-y-2">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setMode(tmpl.id, "full")}
+                            className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${mode === "full" ? (kitchen === "hot" ? "bg-orange-500 text-white border-orange-500" : "bg-blue-500 text-white border-blue-500") : "bg-white text-gray-500 border-gray-200"}`}
+                          >
+                            {t("fullRecipe")}
+                            {tmpl.full_quantity && <span className="block font-normal opacity-80">{tmpl.full_quantity}</span>}
+                          </button>
+                          <button
+                            onClick={() => setMode(tmpl.id, "half")}
+                            className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${mode === "half" ? (kitchen === "hot" ? "bg-orange-500 text-white border-orange-500" : "bg-blue-500 text-white border-blue-500") : "bg-white text-gray-500 border-gray-200"}`}
+                          >
+                            {t("half")}
+                            {tmpl.half_quantity && <span className="block font-normal opacity-80">{tmpl.half_quantity}</span>}
+                          </button>
+                          <button
+                            onClick={() => setMode(tmpl.id, "custom")}
+                            className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${mode === "custom" ? (kitchen === "hot" ? "bg-orange-500 text-white border-orange-500" : "bg-blue-500 text-white border-blue-500") : "bg-white text-gray-500 border-gray-200"}`}
+                          >
+                            {t("quantity")}
+                          </button>
+                        </div>
+                        {mode === "custom" && (
+                          <input
+                            type="text"
+                            placeholder={t("quantityPlaceholder")}
+                            value={customQty.get(tmpl.id) ?? ""}
+                            onChange={(e) => updateQty(tmpl.id, e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {/* Add custom item */}
       <div>
@@ -192,7 +244,7 @@ export default function EveningView({ locale, allowedKitchens }: { locale: strin
             </div>
             <div className="flex gap-2">
               <button onClick={() => setShowAddForm(false)} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-500">{t("cancel")}</button>
-              <button onClick={addCustomItem} disabled={!newItemName.trim() || !newItemFull.trim()} className="flex-1 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold disabled:opacity-40">{t("add")}</button>
+              <button onClick={addCustomItem} disabled={!newItemName.trim()} className="flex-1 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold disabled:opacity-40">{t("add")}</button>
             </div>
           </div>
         )}
