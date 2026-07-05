@@ -47,7 +47,7 @@ function AppShell({ locale }: { locale: string }) {
   return (
     <div className="min-h-screen bg-[#f8f7f4]">
       <Header mode={effectiveMode} onModeChange={setMode} locale={locale} />
-      <main className="max-w-2xl mx-auto px-4 py-6">
+      <main className="max-w-3xl mx-auto px-4 py-6 pb-24 sm:pb-6">
         {effectiveMode === "morning" && <MorningView locale={locale} allowedKitchens={allowedKitchens} />}
         {effectiveMode === "evening" && <EveningView locale={locale} allowedKitchens={allowedKitchens} />}
         {effectiveMode === "supply" && <SupplyView locale={locale} />}

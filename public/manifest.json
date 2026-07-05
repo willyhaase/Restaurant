@@ -1,0 +1,24 @@
+{
+  "name": "Hannig Saas-Fee — Küche",
+  "short_name": "Hannig Küche",
+  "description": "Küchenvorbereitung für Hannig Saas-Fee",
+  "start_url": "/de",
+  "display": "standalone",
+  "background_color": "#f8f7f4",
+  "theme_color": "#1a1a1a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -5,6 +5,8 @@
 :root {
   --background: #f8f7f4;
   --foreground: #1a1a1a;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
 }
 
 body {
@@ -12,8 +14,18 @@ body {
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Safe area utilities */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
 }
