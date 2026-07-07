@@ -251,7 +251,7 @@ export default function EveningView({ locale, allowedKitchens }: { locale: strin
       </div>
 
       {selections.size > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-lg">
+        <div className="fixed bottom-16 sm:bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-lg">
           <div className="max-w-2xl mx-auto">
             <button onClick={saveList} disabled={saving || saved} className={`w-full py-4 rounded-2xl text-sm font-bold transition-all ${saved ? "bg-green-500 text-white" : "bg-gray-900 text-white hover:bg-gray-800 active:scale-95"} disabled:opacity-60`}>
               {saving ? t("saving") : saved ? `✅ ${t("saved")}` : t("save", { count: selections.size })}
