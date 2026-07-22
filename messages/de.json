@@ -114,13 +114,17 @@
   "calendar": {
     "title": "Freie Tage",
     "navLabel": "Kalender",
-    "myDayOff": "Mein freier Tag",
+    "myDayOff": "Meinen freien Tag hinzufügen",
     "addNote": "Notiz (optional)",
     "save": "Speichern",
     "remove": "Entfernen",
     "noOneOff": "Alle arbeiten",
-    "offToday": "Frei",
-    "weekdays": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+    "full": "Ganzer Tag",
+    "half": "Halber Tag",
+    "weekdays": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
+    "selectEmployee": "Mitarbeiter auswählen",
+    "addForEmployee": "Für Mitarbeiter hinzufügen",
+    "adminSection": "Als Admin hinzufügen"
   },
   "kitchen": {
     "hot": "🔥 Warme Küche",

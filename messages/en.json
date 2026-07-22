@@ -114,13 +114,17 @@
   "calendar": {
     "title": "Days Off",
     "navLabel": "Calendar",
-    "myDayOff": "My day off",
+    "myDayOff": "Add my day off",
     "addNote": "Note (optional)",
     "save": "Save",
     "remove": "Remove",
     "noOneOff": "Everyone working",
-    "offToday": "Off",
-    "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    "full": "Full day",
+    "half": "Half day",
+    "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "selectEmployee": "Select employee",
+    "addForEmployee": "Add for employee",
+    "adminSection": "Add as admin"
   },
   "kitchen": {
     "hot": "🔥 Hot Kitchen",

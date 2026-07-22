@@ -82,6 +82,7 @@ export interface TimeOff {
   user_id: string;
   user_name: string;
   date: string;
+  type: "full" | "half";
   note: string | null;
   created_at: string;
 }
