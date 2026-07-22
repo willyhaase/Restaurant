@@ -77,6 +77,15 @@ export interface SupplyFlag {
   supply_items?: SupplyItem;
 }
 
+export interface TimeOff {
+  id: string;
+  user_id: string;
+  user_name: string;
+  date: string;
+  note: string | null;
+  created_at: string;
+}
+
 export function localizedName(tmpl: { name: string; name_en?: string | null; name_de?: string | null }, locale: string): string {
   if (locale === "en" && tmpl.name_en) return tmpl.name_en;
   if (locale === "de" && tmpl.name_de) return tmpl.name_de;

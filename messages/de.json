@@ -111,6 +111,17 @@
     "add": "Hinzufügen",
     "cancel": "Abbrechen"
   },
+  "calendar": {
+    "title": "Freie Tage",
+    "navLabel": "Kalender",
+    "myDayOff": "Mein freier Tag",
+    "addNote": "Notiz (optional)",
+    "save": "Speichern",
+    "remove": "Entfernen",
+    "noOneOff": "Alle arbeiten",
+    "offToday": "Frei",
+    "weekdays": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+  },
   "kitchen": {
     "hot": "🔥 Warme Küche",
     "cold": "❄️ Kalte Küche"

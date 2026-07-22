@@ -111,6 +111,17 @@
     "add": "Add",
     "cancel": "Cancel"
   },
+  "calendar": {
+    "title": "Days Off",
+    "navLabel": "Calendar",
+    "myDayOff": "My day off",
+    "addNote": "Note (optional)",
+    "save": "Save",
+    "remove": "Remove",
+    "noOneOff": "Everyone working",
+    "offToday": "Off",
+    "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  },
   "kitchen": {
     "hot": "🔥 Hot Kitchen",
     "cold": "❄️ Cold Kitchen"

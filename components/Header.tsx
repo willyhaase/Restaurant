@@ -9,7 +9,7 @@ const LOCALES = [
   { code: "de", label: "DE" },
 ];
 
-type Mode = "evening" | "morning" | "supply" | "admin";
+type Mode = "evening" | "morning" | "supply" | "admin" | "calendar";
 
 interface HeaderProps {
   mode: Mode;
@@ -21,6 +21,7 @@ const NAV_ICONS: Record<Mode, string> = {
   morning: "☀️",
   evening: "🌙",
   supply: "📦",
+  calendar: "📅",
   admin: "⚙️",
 };
 
@@ -29,6 +30,7 @@ export default function Header({ mode, onModeChange, locale }: HeaderProps) {
   const tAuth = useTranslations("auth");
   const tAdmin = useTranslations("admin");
   const tSupply = useTranslations("supply");
+  const tCal = useTranslations("calendar");
   const { profile, signOut, setLanguage } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -46,6 +48,7 @@ export default function Header({ mode, onModeChange, locale }: HeaderProps) {
     { id: "morning", label: t("morning") },
     { id: "evening", label: t("evening") },
     { id: "supply", label: tSupply("navLabel") },
+    { id: "calendar", label: tCal("navLabel") },
     ...(isAdmin ? [{ id: "admin" as Mode, label: t("admin") }] : []),
   ];
 
